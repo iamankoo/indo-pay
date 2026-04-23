@@ -3,17 +3,17 @@ class AppConfig {
 
   static const appFlavor = String.fromEnvironment(
     "INDO_PAY_APP_FLAVOR",
-    defaultValue: "staging",
+    defaultValue: "production",
   );
 
   static const stagingApiBaseUrl = String.fromEnvironment(
     "INDO_PAY_STAGING_API_BASE_URL",
-    defaultValue: "https://staging-api.indo-pay.invalid/api/v1",
+    defaultValue: "https://indo-pay-backend.onrender.com/api/v1",
   );
 
   static const productionApiBaseUrl = String.fromEnvironment(
     "INDO_PAY_PRODUCTION_API_BASE_URL",
-    defaultValue: "https://api.indo-pay.invalid/api/v1",
+    defaultValue: "https://indo-pay-backend.onrender.com/api/v1",
   );
 
   static const isProduction = appFlavor == "production";
