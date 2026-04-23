@@ -18,3 +18,10 @@ node_modules
 build
 dist
 .next
+apps/admin/.next
+apps/admin/node_modules
+apps/mobile/build
+release/
+tmp/
+*.apk
+*.log
