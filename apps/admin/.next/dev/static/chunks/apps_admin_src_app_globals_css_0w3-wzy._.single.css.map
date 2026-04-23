@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/admin/src/app/globals.css"],"sourcesContent":["@import \"tailwindcss\";\n\n@theme inline {\n  --font-sans: \"Geist\", \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif;\n  --font-mono: \"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, monospace;\n  --color-background: #07101f;\n  --color-foreground: #f7f9ff;\n  --color-card: rgba(11, 19, 35, 0.82);\n  --color-muted-foreground: #8fa2c4;\n  --color-border: rgba(143, 162, 196, 0.18);\n  --color-primary: #0b4dff;\n  --color-primary-foreground: #ffffff;\n  --color-secondary: #ff9b2f;\n  --color-secondary-foreground: #ffffff;\n  --color-ring: rgba(11, 77, 255, 0.45);\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml,\nbody {\n  margin: 0;\n  min-height: 100%;\n  background:\n    radial-gradient(circle at top left, rgba(11, 77, 255, 0.26), transparent 38%),\n    radial-gradient(circle at top right, rgba(255, 155, 47, 0.16), transparent 32%),\n    linear-gradient(180deg, #091121 0%, #050a14 100%);\n  color: var(--color-foreground);\n  font-family: var(--font-sans);\n}\n\nbody {\n  min-height: 100vh;\n}\n\na {\n  color: inherit;\n  text-decoration: none;\n}\n"],"names":[],"mappings":"AAEA;;;;AAeA;;;;AAIA;;;;;;;;AAYA;;;;AAIA"}}]
+}

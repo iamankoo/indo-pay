@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REVERSED
+}
+
+enum WalletEntryType {
+  CREDIT
+  DEBIT
+  EXPIRY
+}
+
+model User {
+  id                      String                   @id @default(cuid())
+  mobile                  String                   @unique
+  kycStatus               KycStatus                @default(PENDING)
+  createdAt               DateTime                 @default(now())
+  bankAccounts            BankAccount[]
+  transactions            Transaction[]
+  walletEntries           WalletEntry[]
+  deviceBindings          DeviceBinding[]
+  accountBalanceSnapshots AccountBalanceSnapshot[]
+  statementExports        StatementExport[]
+  fraudEvents             FraudEvent[]
+}
+
+model BankAccount {
+  id                      String                   @id @default(cuid())
+  userId                  String
+  maskedAccount           String
+  ifsc                    String
+  vpa                     String                   @unique
+  createdAt               DateTime                 @default(now())
+  user                    User                     @relation(fields: [userId], references: [id])
+  accountBalanceSnapshots AccountBalanceSnapshot[]
+}
+
+model Merchant {
+  id             String        @id @default(cuid())
+  businessName   String
+  ownerMobile    String
+  city           String
+  settlementVpa  String?
+  kycStatus      KycStatus     @default(PENDING)
+  createdAt      DateTime      @default(now())
+  transactions   Transaction[]
+  fraudEvents    FraudEvent[]
+}
+
+model Transaction {
+  id             String            @id @default(cuid())
+  userId         String
+  merchantId     String?
+  amount         Int
+  bankAmount     Int
+  walletAmount   Int               @default(0)
+  category       String
+  rail           String?
+  status         TransactionStatus @default(PENDING)
+  providerRef    String?
+  referenceLabel String?
+  metadata       Json?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  user           User              @relation(fields: [userId], references: [id])
+  merchant       Merchant?         @relation(fields: [merchantId], references: [id])
+  walletMap      WalletEntry[]
+
+  @@index([userId, createdAt])
+  @@index([merchantId, createdAt])
+}
+
+model WalletEntry {
+  id               String            @id @default(cuid())
+  userId           String
+  txnId            String?
+  type             WalletEntryType
+  amount           Int
+  expiresAt        DateTime?
+  status           String
+  description      String?
+  createdAt        DateTime          @default(now())
+  user             User              @relation(fields: [userId], references: [id])
+  txn              Transaction?      @relation(fields: [txnId], references: [id])
+  rewardExpiryJob  RewardExpiryJob?
+
+  @@index([userId, type, createdAt])
+}
+
+model CashbackRule {
+  id                String   @id @default(cuid())
+  cashbackPercent   Decimal  @db.Decimal(5, 4)
+  redemptionPercent Decimal  @db.Decimal(5, 4)
+  minTxn            Int
+  expiryDays        Int
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+}
+
+model FraudEvent {
+  id         String    @id @default(cuid())
+  merchantId String?
+  userId     String?
+  reason     String
+  riskScore  Int
+  metadata   Json
+  createdAt  DateTime  @default(now())
+  merchant   Merchant? @relation(fields: [merchantId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
+}
+
+model DeviceBinding {
+  id                String   @id @default(cuid())
+  userId            String
+  deviceFingerprint String
+  isPrimary         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
+}
+
+model WebhookDelivery {
+  id            String   @id @default(cuid())
+  eventType     String
+  externalRef   String
+  signature     String
+  receivedAt    DateTime @default(now())
+  processedAt   DateTime?
+  retryCount    Int      @default(0)
+  responseCode  Int?
+}
+
+model RewardExpiryJob {
+  id            String      @id @default(cuid())
+  walletEntryId String      @unique
+  scheduledFor  DateTime
+  processedAt   DateTime?
+  status        String
+  createdAt     DateTime    @default(now())
+  walletEntry   WalletEntry @relation(fields: [walletEntryId], references: [id])
+}
+
+model AccountBalanceSnapshot {
+  id               String      @id @default(cuid())
+  userId           String
+  bankAccountId    String
+  availableBalance Int
+  currentBalance   Int
+  fetchedAt        DateTime    @default(now())
+  user             User        @relation(fields: [userId], references: [id])
+  bankAccount      BankAccount @relation(fields: [bankAccountId], references: [id])
+
+  @@index([userId, fetchedAt])
+  @@index([bankAccountId, fetchedAt])
+}
+
+model StatementExport {
+  id        String   @id @default(cuid())
+  userId     String
+  fromDate   DateTime
+  toDate     DateTime
+  fileUrl    String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}

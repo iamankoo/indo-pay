@@ -1,0 +1,20 @@
+
+> @indo-pay/admin@0.1.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+✓ Ready in 1168ms
+
+○ Compiling /login ...
+ GET /login 200 in 4.2s (next.js: 4.0s, application-code: 284ms)
+ GET / 307 in 3.2s (next.js: 2.6s, application-code: 609ms)
+ POST /api/login 200 in 488ms (next.js: 450ms, application-code: 38ms)
+ GET / 200 in 222ms (next.js: 11ms, application-code: 211ms)
+ POST /api/login 200 in 16ms (next.js: 4ms, application-code: 11ms)
+ GET / 200 in 209ms (next.js: 4ms, application-code: 204ms)
+ POST /api/login 200 in 15ms (next.js: 5ms, application-code: 10ms)
+ GET / 200 in 308ms (next.js: 4ms, application-code: 304ms)
+ POST /api/login 200 in 19ms (next.js: 5ms, application-code: 14ms)
+ GET /api/export/dashboard 200 in 233ms (next.js: 174ms, application-code: 59ms)

@@ -1,0 +1,15 @@
+{
+  "name": "indo-pay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UPI-first Indian payments and rewards platform scaffold",
+  "workspaces": [
+    "apps/backend",
+    "apps/admin",
+    "packages/shared"
+  ],
+  "scripts": {
+    "test:rewards": "node tests/reward-engine.test.mjs",
+    "validate:structure": "node tests/validate-structure.mjs"
+  }
+}

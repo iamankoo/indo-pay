@@ -1,0 +1,38 @@
+/* [project]/apps/admin/src/app/globals.css [app-client] (css) */
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --color-background: #07101f;
+  --color-foreground: #f7f9ff;
+  --color-card: #0b1323d1;
+  --color-muted-foreground: #8fa2c4;
+  --color-border: #8fa2c42e;
+  --color-primary: #0b4dff;
+  --color-primary-foreground: #fff;
+  --color-secondary: #ff9b2f;
+  --color-secondary-foreground: #fff;
+  --color-ring: #0b4dff73;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100%;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  background: radial-gradient(circle at 0 0, #0b4dff42, #0000 38%), radial-gradient(circle at 100% 0, #ff9b2f29, #0000 32%), linear-gradient(#091121 0%, #050a14 100%);
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*# sourceMappingURL=apps_admin_src_app_globals_css_0w3-wzy._.single.css.map*/

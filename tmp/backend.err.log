@@ -1,0 +1,6 @@
+[31m[Nest] 9392  - [39m12/04/2026, 12:09:21 am [31m  ERROR[39m [38;5;3m[NestApplicationContext] [39m[31mError happened during shutdown[39m
+Error: kill ENOSYS
+    at process.kill (node:internal/process/per_thread:277:13)
+    at process.cleanup (C:\Users\iaman\Desktop\Anni-Personal\x-Zone\Project\indo-pay\node_modules\@nestjs\core\nest-application-context.js:220:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+^C^C

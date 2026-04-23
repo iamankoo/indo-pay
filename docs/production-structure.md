@@ -1,0 +1,55 @@
+# Production Folder Structure
+
+```text
+indo-pay/
+  apps/
+    backend/
+      src/
+        common/
+          http/
+          prisma/
+          redis/
+          reliability/
+        modules/
+          analytics/
+          auth/
+          bank-transfers/
+          fraud/
+          merchants/
+          notifications/
+          passbook/
+          payments/
+          rewards/
+          wallet/
+    mobile/
+      lib/
+        core/
+          config/
+          network/
+          routing/
+          storage/
+        design_system/
+          widgets/
+        features/
+          home/
+          wallet/
+          passbook/
+          payments/
+          bank_transfer/
+          merchant/
+    admin/
+      src/
+        app/
+          (dashboard)/
+          api/
+          login/
+        components/
+          dashboard/
+          login/
+          ui/
+        lib/
+  docs/
+  packages/
+    shared/
+  tests/
+```

@@ -1,0 +1,9 @@
+{
+  "/(dashboard)/page": "app/(dashboard)/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/export/dashboard/route": "app/api/export/dashboard/route.js",
+  "/api/login/route": "app/api/login/route.js",
+  "/api/logout/route": "app/api/logout/route.js",
+  "/login/page": "app/login/page.js"
+}

@@ -1,0 +1,73 @@
+
+> @indo-pay/backend@0.1.0 start
+> nest start
+
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +30ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +27ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNotificationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFraudModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +26ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRedisModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHealthModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReliabilityModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRewardsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGiftCardsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAnalyticsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWalletModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBankTransfersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMerchantsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassbookModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPaymentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[33m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [33m   WARN[39m [38;5;3m[LegacyRouteConverter] [39m[33mUnsupported route path: "/api/v1/*". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of "path-to-regexp" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with "/users", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/v1/health}:[39m[38;5;3m +2ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/v1/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/login, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/otp/request, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/verify-otp, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/otp/verify, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPaymentsController {/api/v1/payments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/pay, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/merchant, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/bills, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/webhooks/psp, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWalletController {/api/v1/wallet}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/wallet/:userId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/wallet/:userId/entries, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/wallet/preview-redemption, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mGiftCardsController {/api/v1/gift-cards}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/gift-cards/catalog, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/gift-cards/purchase, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mMerchantsController {/api/v1/merchants}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/onboard, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/qr, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/profile, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/profile, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/settlements, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/payout-settings, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/payment-links, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/invoices, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/:merchantId/analytics, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/merchants/webhooks/soundbox, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAnalyticsController {/api/v1/analytics}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/analytics/dashboard, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPassbookController {/api/v1/passbook}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook/wallet, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook/cashback, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook/balance/:accountId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook/mini-statement/:accountId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/passbook/export, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBankTransfersController {/api/v1/bank-transfers}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/beneficiaries, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/beneficiaries, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/validate-ifsc, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/name-enquiry, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/preview, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/bank-transfers/transfer, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:45:31 pm [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +254ms[39m
+[32m[Nest] 9392  - [39m11/04/2026, 10:52:42 pm [32m    LOG[39m [38;5;3m[RedisService] [39m[32mRedis connected at redis://localhost:6379[39m

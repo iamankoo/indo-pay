@@ -1,0 +1,5 @@
+# Copy this file to key.properties and fill in the real release signing values.
+storeFile=../secrets/indo-pay-release.jks
+storePassword=replace-me
+keyAlias=indo-pay-release
+keyPassword=replace-me
