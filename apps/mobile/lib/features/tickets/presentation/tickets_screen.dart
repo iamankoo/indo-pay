@@ -30,7 +30,7 @@ class TicketsScreen extends StatelessWidget {
                     child: FintechActionCard(
                       label: "Train",
                       icon: FintechIconGlyph.tickets,
-                      onTap: () => AppRoute.search.go(context),
+                      onTap: () => AppRoute.search.push(context),
                     ),
                   ),
                   const SizedBox(width: IndoPaySpacing.md),
@@ -38,7 +38,7 @@ class TicketsScreen extends StatelessWidget {
                     child: FintechActionCard(
                       label: "Bus",
                       icon: FintechIconGlyph.tickets,
-                      onTap: () => AppRoute.search.go(context),
+                      onTap: () => AppRoute.search.push(context),
                     ),
                   ),
                   const SizedBox(width: IndoPaySpacing.md),
@@ -46,7 +46,7 @@ class TicketsScreen extends StatelessWidget {
                     child: FintechActionCard(
                       label: "Travel",
                       icon: FintechIconGlyph.tickets,
-                      onTap: () => AppRoute.search.go(context),
+                      onTap: () => AppRoute.search.push(context),
                     ),
                   ),
                 ],
@@ -58,13 +58,13 @@ class TicketsScreen extends StatelessWidget {
             _TicketActionTile(
               label: "Travel offers",
               icon: FintechIconGlyph.offers,
-              onTap: () => AppRoute.offers.go(context),
+              onTap: () => AppRoute.offers.push(context),
             ),
             const SizedBox(height: IndoPaySpacing.sm),
             _TicketActionTile(
               label: "Support",
               icon: FintechIconGlyph.support,
-              onTap: () => AppRoute.support.go(context),
+              onTap: () => AppRoute.support.push(context),
             ),
             const SizedBox(height: IndoPaySpacing.xl),
             Text("Recent", style: Theme.of(context).textTheme.titleLarge),

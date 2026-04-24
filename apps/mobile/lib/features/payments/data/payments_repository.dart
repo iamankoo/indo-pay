@@ -29,15 +29,19 @@ class PaymentsRepository {
     required int amount,
     required String category,
     required String idempotencyKey,
+    String? merchantId,
+    String? referenceLabel,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       "/payments/pay",
       data: {
         "userId": AppConfig.defaultUserId,
-        "merchantId": AppConfig.merchantDemoId,
         "amount": amount,
         "category": category,
         "rail": "UPI",
+        if (merchantId != null && merchantId.isNotEmpty) "merchantId": merchantId,
+        if (referenceLabel != null && referenceLabel.isNotEmpty)
+          "referenceLabel": referenceLabel,
       },
       options: Options(
         headers: {

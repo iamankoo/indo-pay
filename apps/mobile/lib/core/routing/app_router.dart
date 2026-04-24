@@ -6,6 +6,7 @@ import "../../features/bank_transfer/presentation/bank_transfer_screen.dart";
 import "../../features/home/presentation/home_screen.dart";
 import "../../features/merchant/presentation/merchant_screen.dart";
 import "../../features/offers/presentation/offers_screen.dart";
+import "../../features/payments/domain/payment_entry_flow.dart";
 import "../../features/passbook/presentation/passbook_screen.dart";
 import "../../features/payments/presentation/payments_screen.dart";
 import "../../features/scan/presentation/scan_qr_screen.dart";
@@ -46,17 +47,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             duration: const Duration(milliseconds: 350),
           ),
           _route(AppRoute.offers, const OffersScreen()),
-          _route(AppRoute.search, const SearchScreen()),
-          _route(AppRoute.wallet, const WalletScreen()),
-          _route(AppRoute.passbook, const PassbookScreen()),
-          _route(AppRoute.payments, const PaymentsScreen()),
-          _route(AppRoute.transfer, const BankTransferScreen()),
-          _route(AppRoute.merchant, const MerchantScreen()),
-          _route(AppRoute.settings, const SettingsScreen()),
-          _route(AppRoute.security, const SecurityScreen()),
-          _route(AppRoute.support, const SupportScreen()),
         ],
       ),
+      _route(AppRoute.search, const SearchScreen()),
+      _route(AppRoute.wallet, const WalletScreen()),
+      _route(AppRoute.passbook, const PassbookScreen()),
+      GoRoute(
+        path: AppRoute.payments.path,
+        name: AppRoute.payments.routeName,
+        pageBuilder: (context, state) => _buildPage(
+          state: state,
+          child: PaymentsScreen(
+            flow: PaymentEntryFlow.fromQuery(
+              state.uri.queryParameters["flow"],
+            ),
+            initialReference: state.uri.queryParameters["reference"],
+          ),
+          duration: const Duration(milliseconds: 220),
+        ),
+      ),
+      _route(AppRoute.transfer, const BankTransferScreen()),
+      _route(AppRoute.merchant, const MerchantScreen()),
+      _route(AppRoute.settings, const SettingsScreen()),
+      _route(AppRoute.security, const SecurityScreen()),
+      _route(AppRoute.support, const SupportScreen()),
     ],
   );
 });

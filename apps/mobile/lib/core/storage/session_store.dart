@@ -36,4 +36,20 @@ class SessionStore {
     await prefs.setString(_refreshTokenKey, refreshToken);
     await prefs.setString(_userIdKey, userId);
   }
+
+  Future<String?> readUserName() async {
+    final prefs = await _instance();
+    return prefs.getString("user.fullName");
+  }
+
+  Future<void> saveUserName({
+    required String fullName,
+    required String mobileNumber,
+    required String email,
+  }) async {
+    final prefs = await _instance();
+    await prefs.setString("user.fullName", fullName);
+    await prefs.setString("user.mobileNumber", mobileNumber);
+    await prefs.setString("user.email", email);
+  }
 }

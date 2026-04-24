@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:mobile_scanner/mobile_scanner.dart";
 
 import "../../../core/app_routes.dart";
 import "../../../design_system/indo_pay_colors.dart";
@@ -7,71 +10,137 @@ import "../../../design_system/widgets/fintech_icon.dart";
 import "../../../design_system/widgets/fintech_tap_scale.dart";
 import "../../../design_system/widgets/glass_card.dart";
 import "../../../design_system/widgets/scan_hero_orb.dart";
+import "../../payments/domain/payment_entry_flow.dart";
 
-class ScanQrScreen extends StatelessWidget {
+class ScanQrScreen extends StatefulWidget {
   const ScanQrScreen({super.key});
+
+  @override
+  State<ScanQrScreen> createState() => _ScanQrScreenState();
+}
+
+class _ScanQrScreenState extends State<ScanQrScreen> {
+  bool _navigatingToPayment = false;
+
+  Future<void> _openPaymentFlow(
+    PaymentEntryFlow flow, {
+    String? reference,
+  }) async {
+    if (_navigatingToPayment) {
+      return;
+    }
+
+    setState(() => _navigatingToPayment = true);
+
+    try {
+      await AppRoute.payments.push<void>(
+        context,
+        queryParameters: {
+          "flow": flow.queryValue,
+          if (reference != null && reference.isNotEmpty) "reference": reference,
+        },
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _navigatingToPayment = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text("Scan QR")),
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: isDark
-              ? IndoPayColors.darkBackground
-              : IndoPayColors.lightBackground,
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text("Scan QR"),
+          leading: const BackButton(),
         ),
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            IndoPaySpacing.page,
-            IndoPaySpacing.lg,
-            IndoPaySpacing.page,
-            IndoPaySpacing.page,
+        body: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: isDark
+                ? IndoPayColors.darkBackground
+                : IndoPayColors.lightBackground,
           ),
-          children: [
-            Center(
-              child: Hero(
-                tag: AppRoute.scan.heroTag,
-                child: const ScanHeroOrb(diameter: 118),
-              ),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              IndoPaySpacing.page,
+              IndoPaySpacing.lg,
+              IndoPaySpacing.page,
+              IndoPaySpacing.page,
             ),
-            const SizedBox(height: IndoPaySpacing.xl),
-            GlassCard(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: CustomPaint(
-                  painter: _ScannerFramePainter(
-                    color: isDark ? Colors.white : IndoPayColors.textPrimary,
-                  ),
+            children: [
+              Center(
+                child: Hero(
+                  tag: AppRoute.scan.heroTag,
+                  child: const ScanHeroOrb(diameter: 118),
                 ),
               ),
-            ),
-            const SizedBox(height: IndoPaySpacing.xl),
-            Row(
-              children: [
-                Expanded(
-                  child: _ScanAction(
-                    label: "My QR",
-                    icon: FintechIconGlyph.scan,
-                    onTap: () => AppRoute.merchant.go(context),
+              const SizedBox(height: IndoPaySpacing.xl),
+              GlassCard(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(IndoPayRadii.md),
+                        child: MobileScanner(
+                          onDetect: (capture) {
+                            final barcodes = capture.barcodes;
+                            if (barcodes.isEmpty) {
+                              return;
+                            }
+
+                            final code = barcodes.first.rawValue;
+                            if (code == null || code.isEmpty) {
+                              return;
+                            }
+
+                            unawaited(
+                              _openPaymentFlow(
+                                PaymentEntryFlow.qr,
+                                reference: code,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      CustomPaint(
+                        size: Size.infinite,
+                        painter: _ScannerFramePainter(
+                          color: isDark ? Colors.white : IndoPayColors.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: IndoPaySpacing.md),
-                Expanded(
-                  child: _ScanAction(
-                    label: "Passbook",
-                    icon: FintechIconGlyph.passbook,
-                    onTap: () => AppRoute.passbook.go(context),
+              ),
+              const SizedBox(height: IndoPaySpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ScanAction(
+                      label: "My QR",
+                      icon: FintechIconGlyph.scan,
+                      onTap: () => AppRoute.merchant.push(context),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: IndoPaySpacing.md),
+                  Expanded(
+                    child: _ScanAction(
+                      label: "Pay Mobile/UPI",
+                      icon: FintechIconGlyph.send,
+                      onTap: () => _openPaymentFlow(
+                        PaymentEntryFlow.mobileUpi,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
     );
   }
 }

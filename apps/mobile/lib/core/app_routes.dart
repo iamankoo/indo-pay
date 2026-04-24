@@ -38,12 +38,30 @@ enum AppRoute {
 }
 
 extension AppRouteNavigation on AppRoute {
-  void go(BuildContext context) {
-    GoRouter.of(context).go(path);
+  String location({
+    Map<String, String> queryParameters = const <String, String>{},
+  }) {
+    if (queryParameters.isEmpty) {
+      return path;
+    }
+
+    return Uri(path: path, queryParameters: queryParameters).toString();
   }
 
-  void push(BuildContext context) {
-    GoRouter.of(context).push(path);
+  void go(
+    BuildContext context, {
+    Map<String, String> queryParameters = const <String, String>{},
+  }) {
+    GoRouter.of(context).go(location(queryParameters: queryParameters));
+  }
+
+  Future<T?> push<T>(
+    BuildContext context, {
+    Map<String, String> queryParameters = const <String, String>{},
+  }) {
+    return GoRouter.of(context).push<T>(
+      location(queryParameters: queryParameters),
+    );
   }
 }
 

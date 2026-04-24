@@ -41,19 +41,19 @@ class OffersScreen extends ConsumerWidget {
                         _OfferActionRow(
                           label: "Cashback history",
                           icon: FintechIconGlyph.passbook,
-                          onTap: () => AppRoute.passbook.go(context),
+                          onTap: () => AppRoute.passbook.push(context),
                         ),
                         const SizedBox(height: IndoPaySpacing.sm),
                         _OfferActionRow(
                           label: "Wallet",
                           icon: FintechIconGlyph.wallet,
-                          onTap: () => AppRoute.wallet.go(context),
+                          onTap: () => AppRoute.wallet.push(context),
                         ),
                         const SizedBox(height: IndoPaySpacing.sm),
                         _OfferActionRow(
                           label: "Travel offers",
                           icon: FintechIconGlyph.tickets,
-                          onTap: () => AppRoute.tickets.go(context),
+                          onTap: () => AppRoute.tickets.push(context),
                         ),
                       ],
                     ),

@@ -175,7 +175,7 @@ class ProfileDrawer extends StatelessWidget {
   void _openRoute(BuildContext context, AppRoute route) {
     final router = GoRouter.of(context);
     context.pop();
-    Future<void>.microtask(() => router.go(route.path));
+    Future<void>.microtask(() => router.push(route.path));
   }
 
   Future<void> _confirmLogout(BuildContext context) async {

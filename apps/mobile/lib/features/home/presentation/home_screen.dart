@@ -13,10 +13,11 @@ import "../../../design_system/widgets/fintech_tap_scale.dart";
 import "../../../design_system/widgets/glass_card.dart";
 import "../../../design_system/widgets/indo_pay_backdrop.dart";
 import "../../../design_system/widgets/notification_dot.dart";
-import "../../../design_system/widgets/scan_hero_orb.dart";
 import "../../../design_system/widgets/wallet_balance_chip.dart";
 import "../data/home_repository.dart";
 import "../domain/home_dashboard.dart";
+import "widgets/account_creation_sheet.dart";
+import "widgets/fintech_ticker.dart";
 import "widgets/profile_drawer.dart";
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -26,26 +27,11 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late final AnimationController _pulseController = AnimationController(
-    vsync: this,
-    duration: IndoPayMotion.pulse,
-  )..repeat(reverse: true);
-  late final Animation<double> _pulseAnimation = Tween<double>(
-    begin: 1,
-    end: 1.04,
-  ).animate(
-    CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ),
-  );
 
   @override
   void dispose() {
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -59,7 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.transparent,
-      endDrawer: ProfileDrawer(identity: identity),
+      endDrawer: identity != null ? ProfileDrawer(identity: identity) : null,
       body: IndoPayBackdrop(
         child: Stack(
           children: [
@@ -81,10 +67,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     _HomeTopBar(
                       identity: identity,
                       unreadCount: unreadCount,
-                      onProfileTap: () => _scaffoldKey.currentState?.openEndDrawer(),
-                      onSearchTap: () => AppRoute.search.go(context),
+                      onProfileTap: () {
+                        if (identity == null) {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                            builder: (_) => const AccountCreationSheet(),
+                          );
+                        } else {
+                          _scaffoldKey.currentState?.openEndDrawer();
+                        }
+                      },
+                      onSearchTap: () => AppRoute.search.push(context),
                     ),
-                    const SizedBox(height: 124),
+                    const FintechTicker(),
                     const _SectionLabel("Payments"),
                     const SizedBox(height: IndoPaySpacing.md),
                     SizedBox(
@@ -104,17 +101,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           FintechActionCard(
                             label: "Bank Transfer",
                             icon: FintechIconGlyph.transfer,
-                            onTap: () => AppRoute.transfer.go(context),
+                            onTap: () => AppRoute.transfer.push(context),
                           ),
                           FintechActionCard(
                             label: "Passbook",
                             icon: FintechIconGlyph.passbook,
-                            onTap: () => AppRoute.passbook.go(context),
+                            onTap: () => AppRoute.passbook.push(context),
                           ),
                           FintechActionCard(
                             label: "Mobile Recharge",
                             icon: FintechIconGlyph.recharge,
-                            onTap: () => AppRoute.payments.go(context),
+                            onTap: () => AppRoute.payments.push(context),
                           ),
                         ],
                       ),
@@ -128,14 +125,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           _MoneyTile(
                             title: "Send by Number / UPI ID",
                             icon: FintechIconGlyph.send,
-                            onTap: () => AppRoute.payments.go(context),
+                            onTap: () => AppRoute.payments.push(context),
                             trailing: const FintechIcon(FintechIconGlyph.chevronRight),
                           ),
                           const SizedBox(height: IndoPaySpacing.md),
                           _WalletTile(
                             data: data,
                             bankLinkEnabled: bankLinkEnabled,
-                            onTap: () => AppRoute.wallet.go(context),
+                            onTap: () => AppRoute.wallet.push(context),
                           ),
                         ],
                       ),
@@ -166,24 +163,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               ),
             ),
-            Positioned(
-              top: 88,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: ScaleTransition(
-                  scale: _pulseAnimation,
-                  child: FintechTapScale(
-                    onTap: () => AppRoute.scan.go(context),
-                    scale: 0.96,
-                    child: Hero(
-                      tag: AppRoute.scan.heroTag,
-                      child: const ScanHeroOrb(diameter: 132),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -199,7 +178,7 @@ class _HomeTopBar extends StatelessWidget {
     required this.onSearchTap,
   });
 
-  final HomeIdentity identity;
+  final HomeIdentity? identity;
   final int unreadCount;
   final VoidCallback onProfileTap;
   final VoidCallback onSearchTap;
@@ -216,7 +195,7 @@ class _HomeTopBar extends StatelessWidget {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    _Avatar(imageUrl: identity.avatarUrl),
+                    _Avatar(imageUrl: identity?.avatarUrl ?? "https://ui-avatars.com/api/?name=User&background=random"),
                     Positioned(
                       right: -6,
                       top: -4,
@@ -230,13 +209,16 @@ class _HomeTopBar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${_greeting()}, ${identity.firstName}",
+                        identity == null ? "Create your account" : "${_greeting()}, ${identity!.firstName}",
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: identity == null ? FontWeight.bold : null,
+                          color: identity == null ? IndoPayColors.primary : null,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        identity.upiId,
+                        identity?.upiId ?? "Tap here to continue",
                         overflow: TextOverflow.ellipsis,
                         style: IndoPayTypography.mono(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,

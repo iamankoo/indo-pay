@@ -150,7 +150,7 @@ class _SearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FintechTapScale(
-      onTap: () => target.route.go(context),
+      onTap: () => target.route.push(context),
       child: GlassCard(
         child: Row(
           children: [

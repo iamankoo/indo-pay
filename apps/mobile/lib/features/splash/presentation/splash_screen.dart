@@ -1,10 +1,12 @@
-import "dart:ui";
-
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../core/app_routes.dart";
 import "../../../design_system/indo_pay_colors.dart";
 import "../../../design_system/indo_pay_tokens.dart";
+import "../../version/data/update_repository.dart";
+import "../../version/domain/app_update_info.dart";
+import "../../version/presentation/update_dialog.dart";
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,12 +30,15 @@ class _SplashScreenState extends State<SplashScreen>
       curve: IndoPayMotion.interactive,
     ),
   );
+  late final Future<({AppUpdateInfo? info, bool shouldShow})>
+      _updateDecisionFuture;
 
   bool _visible = false;
 
   @override
   void initState() {
     super.initState();
+    _updateDecisionFuture = _prepareUpdateDecision();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         return;
@@ -45,9 +50,46 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _goHome() async {
-    await Future<void>.delayed(IndoPayMotion.splash);
+    await Future<void>.delayed(const Duration(seconds: 1));
+    if (!mounted) {
+      return;
+    }
+
+    final decision = await _updateDecisionFuture;
+    if (!mounted) {
+      return;
+    }
+
+    if (decision.info != null && decision.shouldShow) {
+      showDialog(
+        context: context,
+        barrierDismissible: !decision.info!.forceUpdate,
+        builder: (_) => UpdateDialog(info: decision.info!),
+      );
+      return;
+    }
+
     if (mounted) {
       AppRoute.home.go(context);
+    }
+  }
+
+  Future<({AppUpdateInfo? info, bool shouldShow})> _prepareUpdateDecision() async {
+    try {
+      final container = ProviderScope.containerOf(context, listen: false);
+      final updateRepo = container.read(updateRepositoryProvider);
+      final info = await updateRepo
+          .checkUpdate()
+          .timeout(const Duration(milliseconds: 850), onTimeout: () => null);
+
+      if (info == null) {
+        return (info: null, shouldShow: false);
+      }
+
+      final shouldShow = await updateRepo.shouldShowUpdate(info);
+      return (info: info, shouldShow: shouldShow);
+    } catch (_) {
+      return (info: null, shouldShow: false);
     }
   }
 
@@ -95,79 +137,41 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _visible ? 1 : 0,
                 child: ScaleTransition(
                   scale: _scale,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(36),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                      child: Container(
-                        width: 220,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 28,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 296,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(36),
-                          color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.24),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.6),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              height: 110,
-                              width: 110,
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    IndoPayColors.accent.withValues(alpha: 0.18),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: IndoPayColors.glowRing,
-                                    width: 1.6,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    "assets/branding/indo_pay_logo.png",
-                                    width: 62,
-                                    height: 62,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              "Built with love",
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: isDark
-                                        ? Colors.white
-                                        : IndoPayColors.textPrimary,
-                                  ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "by - Aniket Raj",
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: isDark
-                                        ? Colors.white70
-                                        : IndoPayColors.textSecondary,
-                                  ),
-                            ),
-                          ],
+                        child: Image.asset(
+                          "assets/branding/indo-pay-splash-logo.png",
+                          width: 296,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 40),
+                      Text(
+                        "Built with love",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: isDark
+                                  ? Colors.white
+                                  : IndoPayColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "by - Aniket Raj",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: isDark
+                                  ? Colors.white70
+                                  : IndoPayColors.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -24,6 +24,8 @@ import { PaymentsModule } from "./modules/payments/payments.module";
 import { RewardsModule } from "./modules/rewards/rewards.module";
 import { WalletModule } from "./modules/wallet/wallet.module";
 
+import { ReleasesModule } from "./modules/releases/releases.module";
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -43,7 +45,8 @@ import { WalletModule } from "./modules/wallet/wallet.module";
     MerchantsModule,
     AnalyticsModule,
     PassbookModule,
-    BankTransfersModule
+    BankTransfersModule,
+    ReleasesModule
   ]
 })
 export class AppModule implements NestModule {

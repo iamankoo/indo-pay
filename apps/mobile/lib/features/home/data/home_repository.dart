@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../core/config/app_config.dart";
 import "../../../core/network/api_client.dart";
+import "../../../core/storage/session_store.dart";
 import "../domain/home_dashboard.dart";
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
@@ -13,18 +14,50 @@ final homeDashboardProvider = FutureProvider<HomeDashboard>((ref) async {
   return ref.watch(homeRepositoryProvider).fetchDashboard();
 });
 
-final homeIdentityProvider = Provider<HomeIdentity>((ref) {
-  return const HomeIdentity(
-    firstName: "Ananya",
-    fullName: "Ananya Raj",
-    upiId: "ananya@indopay",
-    phoneNumber: "9876543210",
-    avatarUrl: "https://i.pravatar.cc/160?img=12",
-    kycStatus: "Verified",
-    linkedBankAccounts: 1,
-    savedBeneficiaries: 4,
-  );
+final homeIdentityProvider = StateNotifierProvider<HomeIdentityNotifier, HomeIdentity?>((ref) {
+  return HomeIdentityNotifier()..loadUser();
 });
+
+class HomeIdentityNotifier extends StateNotifier<HomeIdentity?> {
+  HomeIdentityNotifier() : super(null);
+
+  Future<void> loadUser() async {
+    final sessionStore = SessionStore();
+    final name = await sessionStore.readUserName();
+    if (name != null && name.isNotEmpty) {
+      final firstName = name.split(" ").first;
+      state = HomeIdentity(
+        firstName: firstName,
+        fullName: name,
+        upiId: "$firstName@indopay".toLowerCase(),
+        phoneNumber: "",
+        avatarUrl: "https://i.pravatar.cc/160?img=12",
+        kycStatus: "Verified",
+        linkedBankAccounts: 1,
+        savedBeneficiaries: 4,
+      );
+    } else {
+      state = null;
+    }
+  }
+
+  void setUser(String fullName, String mobileNumber, String email) {
+    final firstName = fullName.split(" ").first;
+    state = HomeIdentity(
+      firstName: firstName,
+      fullName: fullName,
+      upiId: "$firstName@indopay".toLowerCase(),
+      phoneNumber: mobileNumber,
+      avatarUrl: "https://i.pravatar.cc/160?img=12",
+      kycStatus: "Verified",
+      linkedBankAccounts: 1,
+      savedBeneficiaries: 4,
+    );
+    final sessionStore = SessionStore();
+    sessionStore.saveUserName(fullName: fullName, mobileNumber: mobileNumber, email: email);
+  }
+}
+
 
 final unreadNotificationCountProvider = StateProvider<int>((ref) => 3);
 final bankLinkFeatureFlagProvider = Provider<bool>((ref) => false);

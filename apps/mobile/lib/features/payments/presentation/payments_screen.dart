@@ -1,3 +1,4 @@
+import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -9,21 +10,29 @@ import "../../../design_system/indo_pay_typography.dart";
 import "../../../design_system/widgets/fintech_icon.dart";
 import "../../../design_system/widgets/glass_card.dart";
 import "../../../design_system/widgets/indo_pay_backdrop.dart";
+import "../domain/payment_entry_flow.dart";
 import "../data/payments_repository.dart";
 import "../domain/payment_models.dart";
 
 class PaymentsScreen extends ConsumerStatefulWidget {
-  const PaymentsScreen({super.key});
+  const PaymentsScreen({
+    super.key,
+    this.flow = PaymentEntryFlow.standard,
+    this.initialReference,
+  });
+
+  final PaymentEntryFlow flow;
+  final String? initialReference;
 
   @override
   ConsumerState<PaymentsScreen> createState() => _PaymentsScreenState();
 }
 
 class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
-  final TextEditingController _amountController =
-      TextEditingController(text: "499");
+  late final TextEditingController _amountController;
+  late final TextEditingController _recipientController;
   final DateFormat _dateFormat = DateFormat("dd MMM");
-  String _category = "QR_PAYMENT";
+  late String _category;
   PaymentPreview? _preview;
   PaymentReceipt? _receipt;
   bool _loading = false;
@@ -32,18 +41,30 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   @override
   void initState() {
     super.initState();
+    _amountController = TextEditingController(text: "499");
+    _recipientController = TextEditingController(
+      text: widget.initialReference ?? "",
+    );
+    _category = widget.flow.initialCategory;
     _refreshPreview();
   }
 
   @override
   void dispose() {
     _amountController.dispose();
+    _recipientController.dispose();
     super.dispose();
   }
 
   Future<void> _refreshPreview() async {
     final amount = int.tryParse(_amountController.text) ?? 0;
     if (amount <= 0) {
+      if (mounted) {
+        setState(() {
+          _preview = null;
+          _error = null;
+        });
+      }
       return;
     }
 
@@ -57,7 +78,12 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
       }
     } catch (error) {
       if (mounted) {
-        setState(() => _error = error.toString());
+        setState(() {
+          _preview = null;
+          // Graceful degradation: A failure in the preview API should not block
+          // the user from proceeding with the actual payment flow.
+          // We intentionally do NOT set _error here to avoid blocking the UI.
+        });
       }
     }
   }
@@ -65,6 +91,13 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Future<void> _submitPayment() async {
     final amount = int.tryParse(_amountController.text) ?? 0;
     if (amount <= 0) {
+      setState(() => _error = "Enter a valid amount.");
+      return;
+    }
+
+    if (widget.flow.requiresRecipient &&
+        _recipientController.text.trim().isEmpty) {
+      setState(() => _error = "Enter mobile number or UPI ID.");
       return;
     }
 
@@ -78,6 +111,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
             amount: amount,
             category: _category,
             idempotencyKey: "mobile-pay-${DateTime.now().microsecondsSinceEpoch}-$amount",
+            referenceLabel: _buildReferenceLabel(),
           );
       HapticFeedback.mediumImpact();
       if (mounted) {
@@ -88,15 +122,53 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
       }
     } catch (error) {
       if (mounted) {
+        final message = _formatApiError(
+          error,
+          fallback: "Payment request failed",
+        );
         setState(() {
           _loading = false;
-          _error = error.toString();
+          _error = message;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment failed: $error")),
+          SnackBar(content: Text(message)),
         );
       }
     }
+  }
+
+  String? _buildReferenceLabel() {
+    final reference = _recipientController.text.trim();
+    if (reference.isNotEmpty) {
+      return reference;
+    }
+    return widget.initialReference;
+  }
+
+  String _formatApiError(
+    Object error, {
+    required String fallback,
+  }) {
+    if (error is DioException) {
+      final data = error.response?.data;
+      if (data is Map<String, dynamic>) {
+        final message = data["message"]?.toString();
+        if (message != null && message.isNotEmpty) {
+          return message;
+        }
+      }
+
+      final statusCode = error.response?.statusCode;
+      if (statusCode != null) {
+        return "$fallback ($statusCode)";
+      }
+
+      if (error.message != null && error.message!.isNotEmpty) {
+        return error.message!;
+      }
+    }
+
+    return fallback;
   }
 
   @override
@@ -106,33 +178,53 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text("Payments"),
+        title: Text(widget.flow.title),
         backgroundColor: Colors.transparent,
       ),
       body: IndoPayBackdrop(
         child: ListView(
           padding: const EdgeInsets.all(IndoPaySpacing.lg),
           children: [
-            Wrap(
-              spacing: IndoPaySpacing.xs + 2,
-              runSpacing: IndoPaySpacing.xs + 2,
-              children: [
-                for (final option in ["QR_PAYMENT", "RECHARGE", "BILL_PAY"])
-                  ChoiceChip(
-                    label: Text(option.replaceAll("_", " ")),
-                    selected: _category == option,
-                    onSelected: (_) {
-                      setState(() => _category = option);
-                      _refreshPreview();
-                    },
-                  ),
-              ],
-            ),
-            const SizedBox(height: 18),
+            if (widget.flow.showsCategoryChooser) ...[
+              Wrap(
+                spacing: IndoPaySpacing.xs + 2,
+                runSpacing: IndoPaySpacing.xs + 2,
+                children: [
+                  for (final option in ["QR_PAYMENT", "RECHARGE", "BILL_PAY"])
+                    ChoiceChip(
+                      label: Text(option.replaceAll("_", " ")),
+                      selected: _category == option,
+                      onSelected: (_) {
+                        setState(() => _category = option);
+                        _refreshPreview();
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: 18),
+            ],
             GlassCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.flow.requiresRecipient) ...[
+                    Text(
+                      widget.flow.recipientLabel,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: IndoPaySpacing.sm),
+                    TextField(
+                      controller: _recipientController,
+                      style: IndoPayTypography.mono(
+                        size: 16,
+                        weight: FontWeight.w600,
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: "name@upi or mobile number",
+                      ),
+                    ),
+                    const SizedBox(height: IndoPaySpacing.md + 2),
+                  ],
                   Text("Amount", style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: IndoPaySpacing.sm),
                   TextField(
@@ -179,7 +271,11 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       color: Colors.white,
                       size: 18,
                     ),
-                    label: Text(_loading ? "Processing..." : "Pay INR $amount"),
+                    label: Text(
+                      _loading
+                          ? "Processing..."
+                          : widget.flow.submitLabel(amount),
+                    ),
                   ),
                 ],
               ),
