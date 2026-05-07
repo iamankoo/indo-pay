@@ -4,6 +4,10 @@ class SessionStore {
   static const _accessTokenKey = "session.accessToken";
   static const _refreshTokenKey = "session.refreshToken";
   static const _userIdKey = "session.userId";
+  static const _userFullNameKey = "user.fullName";
+  static const _userMobileNumberKey = "user.mobileNumber";
+  static const _userEmailKey = "user.email";
+  static const _userProfilePhotoPathKey = "user.profilePhotoPath";
 
   SharedPreferences? _preferences;
 
@@ -39,7 +43,40 @@ class SessionStore {
 
   Future<String?> readUserName() async {
     final prefs = await _instance();
-    return prefs.getString("user.fullName");
+    return prefs.getString(_userFullNameKey);
+  }
+
+  Future<String?> readUserMobileNumber() async {
+    final prefs = await _instance();
+    return prefs.getString(_userMobileNumberKey);
+  }
+
+  Future<String?> readUserEmail() async {
+    final prefs = await _instance();
+    return prefs.getString(_userEmailKey);
+  }
+
+  Future<String?> readUserProfilePhotoPath() async {
+    final prefs = await _instance();
+    return prefs.getString(_userProfilePhotoPathKey);
+  }
+
+  Future<StoredUserProfile?> readUserProfile() async {
+    final prefs = await _instance();
+    final fullName = prefs.getString(_userFullNameKey);
+    final mobileNumber = prefs.getString(_userMobileNumberKey);
+    final email = prefs.getString(_userEmailKey);
+
+    if (fullName == null || fullName.isEmpty) {
+      return null;
+    }
+
+    return StoredUserProfile(
+      fullName: fullName,
+      mobileNumber: mobileNumber ?? "",
+      email: email ?? "",
+      profilePhotoPath: prefs.getString(_userProfilePhotoPathKey),
+    );
   }
 
   Future<void> saveUserName({
@@ -47,9 +84,54 @@ class SessionStore {
     required String mobileNumber,
     required String email,
   }) async {
-    final prefs = await _instance();
-    await prefs.setString("user.fullName", fullName);
-    await prefs.setString("user.mobileNumber", mobileNumber);
-    await prefs.setString("user.email", email);
+    await saveUserProfile(
+      fullName: fullName,
+      mobileNumber: mobileNumber,
+      email: email,
+      profilePhotoPath: await readUserProfilePhotoPath(),
+    );
   }
+
+  Future<void> saveUserProfile({
+    required String fullName,
+    required String mobileNumber,
+    required String email,
+    String? profilePhotoPath,
+  }) async {
+    final prefs = await _instance();
+    await prefs.setString(_userFullNameKey, fullName);
+    await prefs.setString(_userMobileNumberKey, mobileNumber);
+    await prefs.setString(_userEmailKey, email);
+
+    if (profilePhotoPath == null || profilePhotoPath.isEmpty) {
+      await prefs.remove(_userProfilePhotoPathKey);
+      return;
+    }
+
+    await prefs.setString(_userProfilePhotoPathKey, profilePhotoPath);
+  }
+
+  Future<void> saveUserProfilePhotoPath(String? profilePhotoPath) async {
+    final prefs = await _instance();
+    if (profilePhotoPath == null || profilePhotoPath.isEmpty) {
+      await prefs.remove(_userProfilePhotoPathKey);
+      return;
+    }
+
+    await prefs.setString(_userProfilePhotoPathKey, profilePhotoPath);
+  }
+}
+
+class StoredUserProfile {
+  const StoredUserProfile({
+    required this.fullName,
+    required this.mobileNumber,
+    required this.email,
+    this.profilePhotoPath,
+  });
+
+  final String fullName;
+  final String mobileNumber;
+  final String email;
+  final String? profilePhotoPath;
 }

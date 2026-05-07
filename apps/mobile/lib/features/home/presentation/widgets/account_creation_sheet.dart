@@ -3,8 +3,10 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../../design_system/indo_pay_colors.dart";
 import "../../../../design_system/indo_pay_tokens.dart";
+import "../../../../design_system/widgets/profile_avatar.dart";
 import "../../../../design_system/widgets/fintech_tap_scale.dart";
 import "../../data/home_repository.dart";
+import "../../data/profile_photo_repository.dart";
 
 class AccountCreationSheet extends ConsumerStatefulWidget {
   const AccountCreationSheet({super.key});
@@ -18,14 +20,37 @@ class _AccountCreationSheetState extends ConsumerState<AccountCreationSheet> {
   final _fullNameCtrl = TextEditingController();
   final _mobileCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  String? _selectedPhotoPath;
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      ref.read(homeIdentityProvider.notifier).setUser(
-            _fullNameCtrl.text.trim(),
-            _mobileCtrl.text.trim(),
-            _emailCtrl.text.trim(),
-          );
+  Future<void> _pickPhoto() async {
+    final photoPath =
+        await ref.read(profilePhotoRepositoryProvider).pickProfilePhotoPath();
+    if (photoPath == null || !mounted) {
+      return;
+    }
+
+    setState(() => _selectedPhotoPath = photoPath);
+  }
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    String? persistedPhotoPath;
+    if (_selectedPhotoPath != null && _selectedPhotoPath!.isNotEmpty) {
+      persistedPhotoPath = await ref
+          .read(profilePhotoRepositoryProvider)
+          .persistProfilePhoto(_selectedPhotoPath!);
+    }
+
+    await ref.read(homeIdentityProvider.notifier).setUser(
+          fullName: _fullNameCtrl.text.trim(),
+          mobileNumber: _mobileCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          profilePhotoPath: persistedPhotoPath,
+        );
+    if (mounted) {
       Navigator.of(context).pop();
     }
   }
@@ -60,8 +85,32 @@ class _AccountCreationSheetState extends ConsumerState<AccountCreationSheet> {
                   ),
             ),
             const SizedBox(height: IndoPaySpacing.md),
+            Center(
+              child: Column(
+                children: [
+                  ProfileAvatar(
+                    displayName: _fullNameCtrl.text.trim().isEmpty
+                        ? "Indo Pay"
+                        : _fullNameCtrl.text.trim(),
+                    profilePhotoPath: _selectedPhotoPath,
+                    size: 76,
+                  ),
+                  const SizedBox(height: IndoPaySpacing.sm),
+                  FilledButton.tonal(
+                    onPressed: _pickPhoto,
+                    child: Text(
+                      _selectedPhotoPath == null
+                          ? "Add profile photo"
+                          : "Change profile photo",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: IndoPaySpacing.md),
             TextFormField(
               controller: _fullNameCtrl,
+              onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
                 labelText: "Full Name",
                 border: OutlineInputBorder(),
@@ -90,7 +139,9 @@ class _AccountCreationSheetState extends ConsumerState<AccountCreationSheet> {
             ),
             const SizedBox(height: IndoPaySpacing.xl),
             FintechTapScale(
-              onTap: _submit,
+              onTap: () {
+                _submit();
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(

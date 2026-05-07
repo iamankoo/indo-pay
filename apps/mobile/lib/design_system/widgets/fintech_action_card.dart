@@ -67,7 +67,12 @@ class FintechActionCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                Text(label, style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ],
             ),
           ),

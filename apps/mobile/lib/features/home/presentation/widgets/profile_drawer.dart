@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../../core/app_routes.dart";
 import "../../../../design_system/indo_pay_colors.dart";
@@ -9,18 +10,21 @@ import "../../../../design_system/widgets/fintech_icon.dart";
 import "../../../../design_system/widgets/fintech_tap_scale.dart";
 import "../../../../design_system/widgets/glass_card.dart";
 import "../../../../design_system/widgets/indo_pay_backdrop.dart";
+import "../../../../design_system/widgets/profile_avatar.dart";
 import "../../data/home_repository.dart";
 
-class ProfileDrawer extends StatelessWidget {
+class ProfileDrawer extends ConsumerWidget {
   const ProfileDrawer({
     super.key,
-    required this.identity,
   });
 
-  final HomeIdentity identity;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final identity = ref.watch(homeIdentityProvider);
+    if (identity == null) {
+      return const SizedBox.shrink();
+    }
+
     final width = MediaQuery.of(context).size.width * 0.84;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -38,9 +42,10 @@ class ProfileDrawer extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundImage: NetworkImage(identity.avatarUrl),
+                        ProfileAvatar(
+                          displayName: identity.fullName,
+                          profilePhotoPath: identity.profilePhotoPath,
+                          size: 56,
                         ),
                         const SizedBox(width: IndoPaySpacing.md),
                         Expanded(
@@ -100,6 +105,20 @@ class ProfileDrawer extends StatelessWidget {
                           label: "${identity.savedBeneficiaries} saved",
                         ),
                       ],
+                    ),
+                    const SizedBox(height: IndoPaySpacing.md),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: FilledButton.tonal(
+                        onPressed: () {
+                          ref.read(homeIdentityProvider.notifier).updateProfilePhoto();
+                        },
+                        child: Text(
+                          identity.profilePhotoPath == null
+                              ? "Add profile photo"
+                              : "Change profile photo",
+                        ),
+                      ),
                     ),
                   ],
                 ),

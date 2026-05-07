@@ -13,6 +13,7 @@ import "../../../design_system/widgets/fintech_tap_scale.dart";
 import "../../../design_system/widgets/glass_card.dart";
 import "../../../design_system/widgets/indo_pay_backdrop.dart";
 import "../../../design_system/widgets/notification_dot.dart";
+import "../../../design_system/widgets/profile_avatar.dart";
 import "../../../design_system/widgets/wallet_balance_chip.dart";
 import "../data/home_repository.dart";
 import "../domain/home_dashboard.dart";
@@ -31,11 +32,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
     final identity = ref.watch(homeIdentityProvider);
@@ -45,7 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.transparent,
-      endDrawer: identity != null ? ProfileDrawer(identity: identity) : null,
+      endDrawer: identity != null ? const ProfileDrawer() : null,
       body: IndoPayBackdrop(
         child: Stack(
           children: [
@@ -84,37 +80,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const FintechTicker(),
                     const _SectionLabel("Payments"),
                     const SizedBox(height: IndoPaySpacing.md),
-                    SizedBox(
-                      height: 300,
-                      child: GridView.count(
-                        physics: const NeverScrollableScrollPhysics(),
+                    GridView(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: IndoPaySpacing.md,
                         mainAxisSpacing: IndoPaySpacing.md,
-                        childAspectRatio: 1.06,
-                        children: [
-                          FintechActionCard(
-                            label: "Scan QR",
-                            icon: FintechIconGlyph.scan,
-                            onTap: () => AppRoute.scan.go(context),
-                          ),
-                          FintechActionCard(
-                            label: "Bank Transfer",
-                            icon: FintechIconGlyph.transfer,
-                            onTap: () => AppRoute.transfer.push(context),
-                          ),
-                          FintechActionCard(
-                            label: "Passbook",
-                            icon: FintechIconGlyph.passbook,
-                            onTap: () => AppRoute.passbook.push(context),
-                          ),
-                          FintechActionCard(
-                            label: "Mobile Recharge",
-                            icon: FintechIconGlyph.recharge,
-                            onTap: () => AppRoute.payments.push(context),
-                          ),
-                        ],
+                        mainAxisExtent: 156,
                       ),
+                      children: [
+                        FintechActionCard(
+                          label: "Scan QR",
+                          icon: FintechIconGlyph.scan,
+                          onTap: () => AppRoute.scan.go(context),
+                        ),
+                        FintechActionCard(
+                          label: "Bank Transfer",
+                          icon: FintechIconGlyph.transfer,
+                          onTap: () => AppRoute.transfer.push(context),
+                        ),
+                        FintechActionCard(
+                          label: "Passbook",
+                          icon: FintechIconGlyph.passbook,
+                          onTap: () => AppRoute.passbook.push(context),
+                        ),
+                        FintechActionCard(
+                          label: "Mobile Recharge",
+                          icon: FintechIconGlyph.recharge,
+                          onTap: () => AppRoute.payments.push(context),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: IndoPaySpacing.xl),
                     const _SectionLabel("Money"),
@@ -195,7 +193,7 @@ class _HomeTopBar extends StatelessWidget {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    _Avatar(imageUrl: identity?.avatarUrl ?? "https://ui-avatars.com/api/?name=User&background=random"),
+                    _Avatar(identity: identity),
                     Positioned(
                       right: -6,
                       top: -4,
@@ -258,41 +256,15 @@ class _HomeTopBar extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.imageUrl});
+  const _Avatar({required this.identity});
 
-  final String imageUrl;
+  final HomeIdentity? identity;
 
   @override
   Widget build(BuildContext context) {
-    return ClipOval(
-      child: SizedBox(
-        height: 54,
-        width: 54,
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, progress) {
-            if (progress == null) {
-              return child;
-            }
-            return const FintechShimmer(
-              height: 54,
-              width: 54,
-              radius: 999,
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: IndoPayColors.primary.withValues(alpha: 0.12),
-              alignment: Alignment.center,
-              child: Text(
-                "A",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            );
-          },
-        ),
-      ),
+    return ProfileAvatar(
+      displayName: identity?.fullName ?? "Indo Pay",
+      profilePhotoPath: identity?.profilePhotoPath,
     );
   }
 }

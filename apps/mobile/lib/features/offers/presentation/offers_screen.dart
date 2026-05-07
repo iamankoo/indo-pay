@@ -20,61 +20,81 @@ class OffersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wallet = ref.watch(walletSummaryProvider);
+    final canPop = Navigator.of(context).canPop();
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text("Cashback & Offers")),
-      body: IndoPayBackdrop(
-        child: ListView(
-          padding: const EdgeInsets.all(IndoPaySpacing.page),
-          children: [
-            wallet.when(
-              data: (data) => Column(
-                children: [
-                  _RewardSummary(data: data),
-                  const SizedBox(height: IndoPaySpacing.xl),
-                  _ExpiringRewards(data: data),
-                  const SizedBox(height: IndoPaySpacing.xl),
-                  GlassCard(
-                    child: Column(
-                      children: [
-                        _OfferActionRow(
-                          label: "Cashback history",
-                          icon: FintechIconGlyph.passbook,
-                          onTap: () => AppRoute.passbook.push(context),
-                        ),
-                        const SizedBox(height: IndoPaySpacing.sm),
-                        _OfferActionRow(
-                          label: "Wallet",
-                          icon: FintechIconGlyph.wallet,
-                          onTap: () => AppRoute.wallet.push(context),
-                        ),
-                        const SizedBox(height: IndoPaySpacing.sm),
-                        _OfferActionRow(
-                          label: "Travel offers",
-                          icon: FintechIconGlyph.tickets,
-                          onTap: () => AppRoute.tickets.push(context),
-                        ),
-                      ],
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          AppRoute.home.go(context);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text("Cashback & Offers"),
+          leading: BackButton(
+            onPressed: () {
+              if (canPop) {
+                Navigator.of(context).maybePop();
+              } else {
+                AppRoute.home.go(context);
+              }
+            },
+          ),
+        ),
+        body: IndoPayBackdrop(
+          child: ListView(
+            padding: const EdgeInsets.all(IndoPaySpacing.page),
+            children: [
+              wallet.when(
+                data: (data) => Column(
+                  children: [
+                    _RewardSummary(data: data),
+                    const SizedBox(height: IndoPaySpacing.xl),
+                    _ExpiringRewards(data: data),
+                    const SizedBox(height: IndoPaySpacing.xl),
+                    GlassCard(
+                      child: Column(
+                        children: [
+                          _OfferActionRow(
+                            label: "Cashback history",
+                            icon: FintechIconGlyph.passbook,
+                            onTap: () => AppRoute.passbook.push(context),
+                          ),
+                          const SizedBox(height: IndoPaySpacing.sm),
+                          _OfferActionRow(
+                            label: "Wallet",
+                            icon: FintechIconGlyph.wallet,
+                            onTap: () => AppRoute.wallet.push(context),
+                          ),
+                          const SizedBox(height: IndoPaySpacing.sm),
+                          _OfferActionRow(
+                            label: "Travel offers",
+                            icon: FintechIconGlyph.tickets,
+                            onTap: () => AppRoute.tickets.push(context),
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                ),
+                loading: () => const Column(
+                  children: [
+                    FintechShimmer(height: 168, radius: 28),
+                    SizedBox(height: IndoPaySpacing.xl),
+                    FintechShimmer(height: 180, radius: 28),
+                  ],
+                ),
+                error: (error, _) => GlassCard(
+                  child: Text(
+                    "Refresh required",
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                ],
-              ),
-              loading: () => const Column(
-                children: [
-                  FintechShimmer(height: 168, radius: 28),
-                  SizedBox(height: IndoPaySpacing.xl),
-                  FintechShimmer(height: 180, radius: 28),
-                ],
-              ),
-              error: (error, _) => GlassCard(
-                child: Text(
-                  "Refresh required",
-                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

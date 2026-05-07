@@ -50,12 +50,28 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final canPop = Navigator.of(context).canPop();
 
-    return Scaffold(
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          AppRoute.home.go(context);
+        }
+      },
+      child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: const Text("Scan QR"),
-          leading: const BackButton(),
+          leading: BackButton(
+            onPressed: () {
+              if (canPop) {
+                Navigator.of(context).maybePop();
+              } else {
+                AppRoute.home.go(context);
+              }
+            },
+          ),
         ),
         body: DecoratedBox(
           decoration: BoxDecoration(
@@ -141,6 +157,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
             ],
           ),
         ),
+      ),
     );
   }
 }

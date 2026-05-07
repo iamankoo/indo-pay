@@ -14,21 +14,21 @@ class _FintechTickerState extends State<FintechTicker>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 40),
+    duration: const Duration(seconds: 16),
   )..repeat();
 
-  final List<String> _line1 = [
-    "Invest in gold this month",
-    "Start SIP for long-term wealth",
-    "Save before you spend",
-    "Emergency fund is important",
+  static const List<String> _line1 = [
+    "Gold prices rise this week",
+    "UPI safety tip of the day",
+    "Save more with recurring deposits",
+    "Digital payments growing rapidly",
   ];
 
-  final List<String> _line2 = [
-    "UPI safety tip of the day",
-    "RBI digital payment update",
-    "Smart savings improve freedom",
-    "Track your monthly expenses",
+  static const List<String> _line2 = [
+    "Track spending before weekend transfers",
+    "Cardless payments gain momentum",
+    "Keep alerts active for every debit",
+    "Daily budgeting improves cash flow",
   ];
 
   @override
@@ -77,54 +77,87 @@ class _FintechTickerState extends State<FintechTicker>
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            height: 32,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      left: -(_controller.value * 500) % 500,
-                      child: _buildRow(_line1),
-                    ),
-                  ],
-                );
-              },
-            ),
+          _TickerStrip(
+            controller: _controller,
+            items: _line1,
           ),
           const SizedBox(height: 8),
-          SizedBox(
-            height: 32,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      right: -(_controller.value * 500) % 500,
-                      child: _buildRow(_line2),
-                    ),
-                  ],
-                );
-              },
-            ),
+          _TickerStrip(
+            controller: _controller,
+            items: _line2,
+            reverse: true,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRow(List<String> items) {
-    return Row(
-      children: [
-        for (int i = 0; i < 4; i++) // Repeat for infinite scroll effect
-          ...items.map((text) => _buildChip(text)),
-      ],
+}
+
+class _TickerStrip extends StatelessWidget {
+  const _TickerStrip({
+    required this.controller,
+    required this.items,
+    this.reverse = false,
+  });
+
+  final Animation<double> controller;
+  final List<String> items;
+  final bool reverse;
+
+  @override
+  Widget build(BuildContext context) {
+    const estimatedChipWidth = 220.0;
+    final stripWidth = items.length * estimatedChipWidth;
+
+    return SizedBox(
+      height: 32,
+      child: ClipRect(
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, child) {
+            final travel = (controller.value * stripWidth) % stripWidth;
+            final offset = reverse ? travel - stripWidth : -travel;
+
+            return Transform.translate(
+              offset: Offset(offset, 0),
+              child: Row(
+                children: [
+                  _TickerRow(items: items),
+                  const SizedBox(width: 12),
+                  _TickerRow(items: items),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
+}
 
-  Widget _buildChip(String text) {
+class _TickerRow extends StatelessWidget {
+  const _TickerRow({required this.items});
+
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: items
+          .map((text) => _TickerChip(text: text))
+          .toList(growable: false),
+    );
+  }
+}
+
+class _TickerChip extends StatelessWidget {
+  const _TickerChip({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
